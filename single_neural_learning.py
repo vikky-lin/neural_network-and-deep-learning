@@ -32,6 +32,30 @@ def tanh_prime(x):
     """
     return 1-tanh(x)**2
 
+def ReLU(x):
+    """
+    * 修正线性神经元函数
+    """
+    return max(0,x)
+
+def ReLU_prime(x):
+    """
+    * ReLU导数
+    """
+    return 1 if x>0 else 0
+
+def softplus(x):
+    """
+    * sigmoid的原函数
+    """
+    return np.log(1+np.exp(x))
+
+def softplus_prime(x):
+    """
+    * softplus导数
+    """
+    return sigmoid(x)
+
 def calc_w_input(input,weight):
     """
     * 计算神经元函数的带权输入，即w*x
@@ -51,12 +75,18 @@ def loss_func(target,output,method='ms'):
 
 def update(input,weight,w_input,error,learning_rate,method='ms',func='sigmoid'):
     """
-    * 使用梯度下降法进行权重更新
+    * 使用梯度下降法进行权重更新,待修改
     """
-    if method == 'ms':
-        return  weight+learning_rate*error*sigmoid_prime(w_input)*input
-    if method == 'en':
-        return weight+learning_rate*error*input
+    if func == 'sigmoid':
+        if method == 'ms':
+            return  weight+learning_rate*error*sigmoid_prime(w_input)*input
+        if method == 'en':
+            return weight+learning_rate*error*input
+    elif func == 'tanh':
+        if method == 'ms':
+            return  weight+learning_rate*error*sigmoid_prime(w_input)*input
+        if method == 'en':
+            return weight+learning_rate*error*((1+tanh(w_input))/tanh(w_input))*input        
 
 
 def main(input,weight,target,learning_rate,epoch,method='ms',func='sigmoid'):
@@ -85,14 +115,13 @@ def main(input,weight,target,learning_rate,epoch,method='ms',func='sigmoid'):
 if __name__ == '__main__':
     weight = np.array([1,1,1])
     input = np.array([1,1,1])
-    learning_rate = 0.01
+    learning_rate = 0.2
     target = 0
-    epoch = 1000
+    epoch = 100
     X,Y = main(input,weight,target,learning_rate,epoch,method='en',func='tanh')
-    X,Y1 = main(input,weight,target,learning_rate,epoch,method='en',func='sigmoid')
+    # X,Y1 = main(input,weight,target,learning_rate,epoch,method='en',func='sigmoid')
     plt.plot(X,Y,label='tanh')
-    plt.plot(X,Y1,label='sigmoid')
+    # plt.plot(X,Y1,label='sigmoid')
     plt.legend()
     plt.show()
-
 
