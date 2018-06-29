@@ -20,6 +20,18 @@ def sigmoid_prime(x):
     """
     return sigmoid(x)*(1-sigmoid(x))
 
+def tanh(x):
+    """
+    * 双曲正切函数
+    """
+    return (np.exp(x)-np.exp(-x))/(np.exp(x)+np.exp(-x))
+
+def tanh_prime(x):
+    """
+    * tanh函数导数
+    """
+    return 1-tanh(x)**2
+
 def calc_w_input(input,weight):
     """
     * 计算神经元函数的带权输入，即w*x
@@ -37,7 +49,7 @@ def loss_func(target,output,method='ms'):
         
 
 
-def update(input,weight,w_input,error,learning_rate,method='ms'):
+def update(input,weight,w_input,error,learning_rate,method='ms',func='sigmoid'):
     """
     * 使用梯度下降法进行权重更新
     """
@@ -46,9 +58,13 @@ def update(input,weight,w_input,error,learning_rate,method='ms'):
     if method == 'en':
         return weight+learning_rate*error*input
 
-def main(input,weight,target,learning_rate,epoch,method='ms'):
+
+def main(input,weight,target,learning_rate,epoch,method='ms',func='sigmoid'):
     w_input = calc_w_input(input,weight)
-    output = sigmoid(w_input)   # 计算神经元输出值
+    if func == 'sigmoid':
+        output = sigmoid(w_input)   # 计算神经元输出值
+    if func == 'tanh':
+        output = tanh(w_input)
     error = target-output   # 计算当前样本输出值与目标值的误差
     loss = loss_func(target,output,method)  # 根据损失函数计算当前样本输出值的损失值
     X = []  # X轴
@@ -58,7 +74,10 @@ def main(input,weight,target,learning_rate,epoch,method='ms'):
         Y.append(output)
         weight = update(input,weight,w_input,error,learning_rate,method)    # 权重更新
         w_input = calc_w_input(input,weight)
-        output = sigmoid(w_input)
+        if func == 'sigmoid':
+            output = sigmoid(w_input)   # 计算神经元输出值
+        if func == 'tanh':
+            output = tanh(w_input)
         error = target-output
         loss = loss_func(target,output,method)
     return X,Y
@@ -68,11 +87,12 @@ if __name__ == '__main__':
     input = np.array([1,1,1])
     learning_rate = 0.01
     target = 0
-    epoch = 3000
-    X,Y = main(input,weight,target,learning_rate,epoch,method='ms')
-    X,Y1 = main(input,weight,target,learning_rate,epoch,method='en')
-    plt.plot(X,Y)
-    plt.plot(X,Y1)
+    epoch = 1000
+    X,Y = main(input,weight,target,learning_rate,epoch,method='en',func='tanh')
+    X,Y1 = main(input,weight,target,learning_rate,epoch,method='en',func='sigmoid')
+    plt.plot(X,Y,label='tanh')
+    plt.plot(X,Y1,label='sigmoid')
+    plt.legend()
     plt.show()
 
 
